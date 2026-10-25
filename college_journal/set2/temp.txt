@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <ctype.h>
+
+int stack[100];
+int top = -1;
+
+void push(int x) {
+    top++;
+    stack[top] = x;
+}
+
+int pop() {
+    int x = stack[top];
+
+    top--;
+
+    return x;
+}
+
+int main() {
+    char exp[100];
+    int i, a, b, ans;
+
+    printf("Enter postfix expression: ");
+    scanf("%s", exp);
+
+    for (i = 0; exp[i] != '\0'; i++) {
+        if (isdigit(exp[i])) {
+            push(exp[i] - '0');
+        }
+        else {
+            b = pop();
+            a = pop();
+
+            if (exp[i] == '+') {
+                ans = a + b;
+            }
+            else if (exp[i] == '-') {
+                ans = a - b;
+            }
+            else if (exp[i] == '*') {
+                ans = a * b;
+            }
+            else if (exp[i] == '/') {
+                ans = a / b;
+            }
+
+            push(ans);
+        }
+    }
+
+    printf("Result = %d", pop());
+
+    return 0;
+}
+
+
+
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+struct Node
+{
+int coeff;
+int exp;
+struct Node *next;
+};
+struct Node* insert(struct Node *head, int c, int e)
+{
+struct Node *newnode, *temp;
+newnode = (struct Node*)malloc(sizeof(struct Node));
+newnode->coeff = c;
+newnode->exp = e;
+newnode->next = NULL;
+if (head == NULL)
+{
+head = newnode;
+}
+else
+{
+temp = head;
+while (temp->next != NULL)
+{
+temp = temp->next;
+}
+temp->next = newnode;
+}
+return head;
+}
+struct Node* add(struct Node *p1, struct Node *p2)
+{
+struct Node *sum = NULL;
+while (p1 != NULL && p2 != NULL)
+{
+if (p1->exp == p2->exp)
+{
+sum = insert(sum, p1->coeff + p2->coeff, p1->exp);
+p1 = p1->next;
+p2 = p2->next;
+}
+else if (p1->exp > p2->exp)
+{
+sum = insert(sum, p1->coeff, p1->exp);
+p1 = p1->next;
+}
+else
+{
+sum = insert(sum, p2->coeff, p2->exp);
+p2 = p2->next;
+}
+}
+while (p1 != NULL)
+{
+sum = insert(sum, p1->coeff, p1->exp);
+p1 = p1->next;
+}
+while (p2 != NULL)
+{
+sum = insert(sum, p2->coeff, p2->exp);
+p2 = p2->next;
+}
+return sum;
+}
+void display(struct Node *head)
+{
+struct Node *temp = head;
+while (temp != NULL)
+{
+  printf("%dx^%d", temp->coeff, temp->exp);
+if (temp->next != NULL)
+{
+printf(" + ");
+}
+temp = temp->next;
+}
+printf("\n");
+}
+int main()
+{
+struct Node *p1 = NULL;
+struct Node *p2 = NULL;
+struct Node *sum = NULL;
+// First polynomial: 4x^4 + 3x^2 + 2
+p1 = insert(p1, 4, 4);
+p1 = insert(p1, 3, 2);
+p1 = insert(p1, 2, 0);
+// Second polynomial: 5x^4 + 2x^3 + 6
+p2 = insert(p2, 5, 4);
+p2 = insert(p2, 2, 3);
+p2 = insert(p2, 6, 0);
+printf("First Polynomial : ");
+display(p1);
+printf("Second Polynomial : ");
+display(p2);
+sum = add(p1, p2);
+printf("Sum of Polynomials: ");
+display(sum);
+return 0;
+}
